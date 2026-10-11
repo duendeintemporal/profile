@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 
+export const instant = false    // ← AÑADE ESTA LÍNEA
+
 export default async function ProjectPage({
   params,
 }: {
