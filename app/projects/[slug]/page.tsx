@@ -1,15 +1,8 @@
-import { supabase } from '@/lib/supabase'
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
-export const instant = false    // ← AÑADE ESTA LÍNEA
-
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params
-
+async function ProjectDetail({ slug }: { slug: string }) {
   const { data: project } = await supabase
     .from('projects')
     .select('*')
@@ -88,5 +81,27 @@ export default async function ProjectPage({
         </div>
       )}
     </article>
+  )
+}
+
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-3xl px-4 py-16">
+          <div className="h-8 bg-slate-800 rounded animate-pulse mb-4" />
+          <div className="h-4 bg-slate-800 rounded animate-pulse mb-2" />
+          <div className="h-4 bg-slate-800 rounded animate-pulse w-2/3" />
+        </div>
+      }
+    >
+      <ProjectDetail slug={slug} />
+    </Suspense>
   )
 }
