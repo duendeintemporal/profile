@@ -2,12 +2,27 @@ import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-async function ProjectDetail({ slug }: { slug: string }) {
-  const { data: project } = await supabase
+// 1. Pre-genera una ruta estática por cada proyecto en el build
+export async function generateStaticParams() {
+  const { data: projects } = await supabase.from('projects').select('slug')
+  return projects?.map((p) => ({ slug: p.slug })) ?? []
+}
+
+// 2. Consulta cacheada — se incluye en el HTML estático generado
+async function getProject(slug: string) {
+  'use cache'
+  const { data } = await supabase
     .from('projects')
     .select('*')
     .eq('slug', slug)
     .single()
+  return data
+}
+
+// 3. Componente que resuelve params + datos (dentro de Suspense)
+async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const project = await getProject(slug)
 
   if (!project) notFound()
 
@@ -84,13 +99,12 @@ async function ProjectDetail({ slug }: { slug: string }) {
   )
 }
 
-export default async function ProjectPage({
+// 4. Página: el Suspense envuelve TODO lo que consume params
+export default function ProjectPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params
-
   return (
     <Suspense
       fallback={
@@ -101,7 +115,7 @@ export default async function ProjectPage({
         </div>
       }
     >
-      <ProjectDetail slug={slug} />
+      <ProjectDetail params={params} />
     </Suspense>
   )
 }

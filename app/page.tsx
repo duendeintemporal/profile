@@ -6,12 +6,18 @@ import LearningAreas from '@/components/LearningAreas'
 import ContactForm from '@/components/ContactForm'
 import { supabase } from '@/lib/supabase'
 
-export default async function Home() {
-  const { data: projects } = await supabase
+async function getProjects() {
+  'use cache'
+  const { data } = await supabase
     .from('projects')
     .select('*')
     .order('featured', { ascending: false })
     .order('year', { ascending: false })
+  return data ?? []
+}
+
+export default async function Home() {
+  const projects = await getProjects()
 
   return (
     <main>
@@ -26,7 +32,7 @@ export default async function Home() {
         </p>
 
         <div className="grid gap-5 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {projects?.map((p) => (
+          {projects.map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}
         </div>
