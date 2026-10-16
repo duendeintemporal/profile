@@ -17,7 +17,7 @@ export default function Avatar({
 
   return (
     <div
-      className="relative w-40 h-40 sm:w-52 sm:h-52 mx-auto cursor-pointer group"
+      className="relative w-40 h-40 sm:w-52 sm:h-52 landscape:w-32 landscape:h-32 md:landscape:w-52 md:landscape:h-52 mx-auto cursor-pointer group"
       style={{ perspective: '1200px' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -63,9 +63,9 @@ export default function Avatar({
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       </div>
 
-      <p className="mt-3 text-center text-xs text-slate-500 group-hover:text-sky-400 transition-colors">
-        hover para ver más
-      </p>
-    </div>
+      <p className="mt-3 text-center text-xs text-slate-500 group-hover:text-sky-400 transition-colors hidden landscape:hidden md:landscape:block md:block">
+      hover para ver más
+      </p>    
+  </div>
   )
 }
